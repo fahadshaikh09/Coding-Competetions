@@ -17,24 +17,22 @@
 from pprint import pprint
 import copy
 
-results = []
-
 def get_signal_status(curr_time, T):
 	return "G" if curr_time % (2*T) < T else "R"
 
 def get_wait_time(curr_time, T):
 	return 2*T - (curr_time % (2*T))
 
-def collect_all_paths(graph, root, curr_time, T, C, N, traversed=[1]):
+def get_all_paths(graph, root, curr_time, T, C, N, traversed=[1], all_paths = []):
 
 	# print "current : root = {root} | curr_time = {time} | traversed = {traversed}".format(root=root, time=curr_time, traversed=traversed)
 
-	if root == N: # is it a root node ?
-		results.append([curr_time, traversed])
-		return curr_time
+	if root == N: # is it a N'th node ?
+		all_paths.append([curr_time, traversed])
+		return
 
-	if graph[root] == []: #is it a leaf node ?
-		return None
+	if not graph[root]: #is it a leaf node ?
+		return
 
 	signal_status = get_signal_status(curr_time, T)
 
@@ -44,11 +42,11 @@ def collect_all_paths(graph, root, curr_time, T, C, N, traversed=[1]):
 
 	start_time_for_next_node = wait_time + curr_time
 
-	for node in graph[root]:
-		if node not in traversed:
-			collect_all_paths(graph, node, start_time_for_next_node + C, T, C, N, traversed + [node])
+	for child_node in graph[root]:
+		if child_node not in traversed:
+			get_all_paths(graph, child_node, start_time_for_next_node + C, T, C, N, traversed + [child_node])
 
-
+	return all_paths
 			
 if __name__ == '__main__':
 	input_ = """7 7 3 5
@@ -78,12 +76,12 @@ if __name__ == '__main__':
 
 	curr_time = 0
 	root = 1
-	collect_all_paths(graph, root, curr_time, T, C, N)
+	all_paths = get_all_paths(graph, root, curr_time, T, C, N)
 
 	print "All Possible Paths with costs: ", 
-	pprint(results)
+	pprint(all_paths)
 	
-	print "Minium Time Path: ", min(results, key=lambda x: x[0])[0]
-	print "Shortest Route : ", min(results, key=lambda x: len(x[1]))[1]
-	print "Longest Route : ", max(results, key=lambda x: len(x[1]))[1]
-	print "Second Minimum Time: ", sorted(set([x[0] for x in results]))[1]
+	print "Minium Time Path: ", min(all_paths, key=lambda x: x[0])[0]
+	print "Shortest Route : ", min(all_paths, key=lambda x: len(x[1]))[1]
+	print "Longest Route : ", max(all_paths, key=lambda x: len(x[1]))[1]
+	print "Second Minimum Time: ", sorted(set([x[0] for x in all_paths]))[1]
