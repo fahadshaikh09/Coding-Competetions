@@ -15,13 +15,11 @@
 """
 
 from pprint import pprint
-import copy
+from collections import defaultdict
 
-def get_signal_status(curr_time, T):
-	return "G" if curr_time % (2*T) < T else "R"
+get_signal_status = lambda curr_time, T: "G" if curr_time % (2*T) < T else "R"
 
-def get_wait_time(curr_time, T):
-	return 2*T - (curr_time % (2*T))
+get_wait_time = lambda curr_time, T: 2*T - (curr_time % (2*T))
 
 def get_all_paths(graph, root, curr_time, T, C, N, traversed=[1], all_paths = []):
 
@@ -63,12 +61,13 @@ if __name__ == '__main__':
 	N, M, T, C = map(int, lines[0].split(" "))
 
 	#create empty graph
-	graph = {i :[] for i in range(1, N+1)}
+	graph = defaultdict(list)
 
 	#collect all the edges
 	for line in lines[1:]:
 		i, j = map(int, line.split(" "))
 		graph[i].append(j)
+		graph[j].append(i)
 
 	print "Graph : ", 
 	pprint(graph)
