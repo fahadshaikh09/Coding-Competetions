@@ -26,15 +26,13 @@ import re
 
 
 def decompress_len(s):
-    first_flag = True
     remaining_str = s
     l = 0
 
     while True:
         regx = re.search(r"\((\d+)x(\d+)\)", remaining_str)
         if regx:
-            first_flag = False
-            repeat_len, repeat_times = map(int, [regx.group(1), regx.group(2)])
+            repeat_len, repeat_times = map(int, regx.groups())
             start_str, remaining_tmp = re.split(
                 r"\(\d+x\d+\)", remaining_str, maxsplit=1)
 
@@ -45,9 +43,6 @@ def decompress_len(s):
 
             l += repeat_times * decompress_len(repeat_str)
 
-        elif first_flag:
-            # if string dont have any marker from start of the function
-            return len(s)
         else:
             # if str had some markers which are decompressed now
             l += len(remaining_str)
